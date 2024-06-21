@@ -2,7 +2,7 @@ import { Component, Inject, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FormServiceService } from './services/form-service.service';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -12,21 +12,37 @@ import { ReactiveFormsModule } from '@angular/forms';
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
+  constructor(private _fb: FormBuilder) {}
 
-  constructor(){}
+  response: any;
+  dynamicForm = this._fb.group({});
 
-  response : any;
-
-  formsData = inject(FormServiceService)
+  formsData = inject(FormServiceService);
 
   ngOnInit(): void {
-    this.formsData.getFormFields().subscribe((data: any)=>{
-      this.response = data.data
-      console.log(this.response);
-    }
-
-  )
-    
+    this.getFormData();
   }
 
+  getFormData() {
+    this.formsData.getFormFields().subscribe((data: any) => {
+      this.response = data.data;
+      this.setFormsData(this.response);
+      console.log(this.response);
+      
+    });
+  }
+
+  setFormsData(controls: any) {
+    for (const control of controls) {
+      const validators = [];
+      if(control.validators.required){
+        validators.push(Validators.required);
+      }
+      this.dynamicForm.addControl(control.name, this._fb.control(control.value,validators ));
+    }
+  }
+
+  saveForm() {
+    console.log(this.dynamicForm.value);
+  }
 }

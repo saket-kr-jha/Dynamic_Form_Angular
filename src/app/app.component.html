@@ -1,0 +1,36 @@
+<h3>Dynamic Reactive Form Example</h3>
+
+<div class="container">
+  <form [formGroup]="dynamicForm" (ngSubmit)="saveForm()">
+    <div class="field" *ngFor="let field of response; " [ngSwitch]="field.type">
+      <div class="row">
+        <div class="col-25">
+          <label for="field.label">{{field.label}}</label>
+        </div>
+        <div class="col-75">
+
+          <textarea placeholder="Write something.." *ngSwitchCase="'textArea'" formControlName="{{field.name}}"
+            style="height:200px"></textarea>
+
+          <input type="text" name="{{field.name}}" placeholder="Your name.." *ngSwitchCase="'text'"
+            formControlName="{{field.name}}">
+
+          <input type="text" name="{{field.name}}" placeholder="Your mobile" *ngSwitchCase="'number'"
+            formControlName="{{field.name}}">
+
+          <select *ngSwitchCase="'dropdown'" formControlName="{{field.name}}">
+            <option *ngFor="let option of field.options" [value]="option.value">{{option.label}}</option>
+          </select>
+
+          <span *ngIf="dynamicForm.get(field.name)?.invalid && dynamicForm.get(field.name)?.dirty">
+            This form is required
+          </span>
+
+        </div>
+      </div>
+
+    </div>
+  <input type="submit" value="Submit">
+
+  </form>
+</div>
