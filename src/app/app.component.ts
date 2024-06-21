@@ -1,8 +1,24 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+  ViewChildrenDecorator,
+  ViewContainerRef,
+  ViewRef,
+  inject,
+} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FormServiceService } from './services/form-service.service';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { concatAll } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +28,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
+  showPrimary: boolean = true;
   constructor(private _fb: FormBuilder) {}
 
   response: any;
@@ -19,7 +36,36 @@ export class AppComponent implements OnInit {
 
   formsData = inject(FormServiceService);
 
+  @ViewChild('placeholder', { read: ViewContainerRef, static: true })
+  public container!: ViewContainerRef;
+
+  @ViewChild('primary', { static: true })
+  public primary!: TemplateRef<any>;
+
+  @ViewChild('secondary', { static: true })
+  public secondary!: TemplateRef<any>;
+
   ngOnInit(): void {
+    let primaryView: ViewRef, secondaryView: ViewRef;
+    setInterval(() => {
+      this.container.detach();
+      if (this.showPrimary) {
+        if (primaryView) {
+          this.container.insert(primaryView);
+        } else {
+          this.container.createEmbeddedView(this.primary, { text: 'primary' });
+        }
+      } else {
+        if (secondaryView) {
+          this.container.insert(secondaryView);
+        } else {
+          this.container.createEmbeddedView(this.secondary, {
+            text: 'secondary',
+          });
+        }
+      }
+      this.showPrimary = !this.showPrimary;
+    },1000);
     this.getFormData();
   }
 
@@ -28,17 +74,19 @@ export class AppComponent implements OnInit {
       this.response = data.data;
       this.setFormsData(this.response);
       console.log(this.response);
-      
     });
   }
 
   setFormsData(controls: any) {
     for (const control of controls) {
       const validators = [];
-      if(control.validators.required){
+      if (control.validators.required) {
         validators.push(Validators.required);
       }
-      this.dynamicForm.addControl(control.name, this._fb.control(control.value,validators ));
+      this.dynamicForm.addControl(
+        control.name,
+        this._fb.control(control.value, validators)
+      );
     }
   }
 
