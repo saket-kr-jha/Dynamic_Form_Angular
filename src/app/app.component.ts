@@ -49,6 +49,14 @@ export class AppComponent implements OnInit {
     // component.instance.clicked.subscribe(()=> {
     //   console.log("clicked");
     // })
+
+    //method 2
+     this.container.clear();
+    const component = this.container.createComponent(DynamicComponent);
+    component.instance.description = "Dynamic component";
+    component.instance.clicked.subscribe(()=> {
+      console.log("clicked");
+    })
   }
 
   // @ViewChild('primary', { static: true })
