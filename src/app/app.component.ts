@@ -43,20 +43,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     // 1st way to dynamically load component
-    // this.container.clear();
-    // const component = this.container.createComponent(DynamicComponent);
-    // component.instance.description = "Dynamic component";
-    // component.instance.clicked.subscribe(()=> {
-    //   console.log("clicked");
-    // })
-
-    //method 2
-     this.container.clear();
+    this.container.clear();
     const component = this.container.createComponent(DynamicComponent);
     component.instance.description = "Dynamic component";
     component.instance.clicked.subscribe(()=> {
       console.log("clicked");
     })
+
   }
 
   // @ViewChild('primary', { static: true })
